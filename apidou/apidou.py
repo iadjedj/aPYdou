@@ -5,25 +5,27 @@ import struct
 import math
 from enum import Enum, unique
 
-__all__ = ['proclamer']
+__all__ = ['APIdou']
 
-@unique
-class APIdouPositions(Enum):
-	ON_THE_BACK = 0
-	FACING_DOWN = 1
-	STANDING = 2
-	UPSIDE_DOWN = 3
-	ON_THE_LEFT = 4
-	ON_THE_RIGHT = 5
-	MOVING = 6
-	FALLING = 7
-	UNKNOW = 8
 
 class APIdou():
 	"""
 		Python class for simplifying communication with APIdou
 		Based on the PyGATT library (https://github.com/peplin/pygatt/)
 	"""
+	
+	@unique
+	class APIdouPositions(Enum):
+		ON_THE_BACK = 0
+		FACING_DOWN = 1
+		STANDING = 2
+		UPSIDE_DOWN = 3
+		ON_THE_LEFT = 4
+		ON_THE_RIGHT = 5
+		MOVING = 6
+		FALLING = 7
+		UNKNOW = 8
+	
 	accel_uuid	= "aef95801-5027-41dd-a0ae-7b5f6045d4d3"
 	gyro_uuid	= "aef95802-5027-41dd-a0ae-7b5f6045d4d3"
 	touch_uuid	= "aef95803-5027-41dd-a0ae-7b5f6045d4d3"
@@ -228,24 +230,24 @@ class APIdou():
 			The accelerometer needs to be on with the default callback
 		"""
 		if self.mag > 22000:
-			return APIdouPositions.MOVING
+			return APIdou.APIdouPositions.MOVING
 		elif self.mag < 5000:
-			return APIdouPositions.FALLING
+			return APIdou.APIdouPositions.FALLING
 
 		pitch = (math.atan2(self.accel[1], self.accel[2]) * (180 / math.pi)) % 360 
 		roll = (math.atan2(self.accel[0], self.accel[2]) * (180 / math.pi)) % 360
 
 		if (pitch < 20 or pitch > 340) and (roll < 20 or roll > 340):
-			return APIdouPositions.ON_THE_BACK
+			return APIdou.APIdouPositions.ON_THE_BACK
 		elif 150 < pitch < 210 and 150 < roll < 210:
-			return APIdouPositions.FACING_DOWN
+			return APIdou.APIdouPositions.FACING_DOWN
 		elif 45 < pitch < 135:
-			return APIdouPositions.STANDING
+			return APIdou.APIdouPositions.STANDING
 		elif 225 < pitch < 315:
-			return APIdouPositions.UPSIDE_DOWN
+			return APIdou.APIdouPositions.UPSIDE_DOWN
 		elif 45 < roll < 135:
-			return APIdouPositions.ON_THE_LEFT
+			return APIdou.APIdouPositions.ON_THE_LEFT
 		elif 225 < roll < 315:
-			return APIdouPositions.ON_THE_RIGHT
+			return APIdou.APIdouPositions.ON_THE_RIGHT
 		else:
-			return APIdouPositions.UNKNOW
+			return APIdou.APIdouPositions.UNKNOW

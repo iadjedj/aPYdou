@@ -3,12 +3,12 @@
 
 """
 	Python class for simplifying communication with APIdou
-	APIdou is a currently under devellopement connected plush !
+	APIdou is a currently under devellopement connected plush
 	More info on www.apidou.fr
 	Based on the PyGATT library (https://github.com/peplin/pygatt/)
 	Examples code on https://github.com/iadjedj/APIdouExamples
 """
 
-__version__ = "0.2"
+__version__ = "0.2.1"
 
 from apidou import APIdou
