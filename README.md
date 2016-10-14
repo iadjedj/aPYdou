@@ -4,7 +4,7 @@ This module based on PyGATT (by Chris Peplin) makes easier to communicate
 over BLE with APIdou, the connected plush (www.apidou.fr).
 
 Example code :
-```
+```python
 from apidou import APIdou
 # create an APIdou object using gatttool and a given MAC address
 device = APIdou("linux", "AA:BB:CC:DD:EE:FF")
