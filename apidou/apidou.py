@@ -1,31 +1,19 @@
 # -*- coding: utf-8 -*-
 
+
 import pygatt.backends
 import struct
 import math
-from enum import Enum, unique
 
 __all__ = ['APIdou']
-
 
 class APIdou():
 	"""
 		Python class for simplifying communication with APIdou
 		Based on the PyGATT library (https://github.com/peplin/pygatt/)
 	"""
-	
-	@unique
-	class APIdouPositions(Enum):
-		ON_THE_BACK = 0
-		FACING_DOWN = 1
-		STANDING = 2
-		UPSIDE_DOWN = 3
-		ON_THE_LEFT = 4
-		ON_THE_RIGHT = 5
-		MOVING = 6
-		FALLING = 7
-		UNKNOW = 8
-	
+
+		
 	accel_uuid	= "aef95801-5027-41dd-a0ae-7b5f6045d4d3"
 	gyro_uuid	= "aef95802-5027-41dd-a0ae-7b5f6045d4d3"
 	touch_uuid	= "aef95803-5027-41dd-a0ae-7b5f6045d4d3"
@@ -38,6 +26,16 @@ class APIdou():
 	LEFT_EAR	= 2**4
 	RIGHT_EAR	= 2**5
 	ANTENNA		= 2**6
+
+	ON_THE_BACK = 0
+	FACING_DOWN = 1
+	STANDING = 2
+	UPSIDE_DOWN = 3
+	ON_THE_LEFT = 4
+	ON_THE_RIGHT = 5
+	MOVING = 6
+	FALLING = 7
+	UNKNOW = 8
 
 	def __init__(self, backend, mac, hci_device='hci0'):
 		""" Default constructor
@@ -60,12 +58,12 @@ class APIdou():
 		self.hci = hci_device
 
 	@staticmethod
-	def scan(backend, timeout=5, hci_device='hci0'):
+	def scan(backend, timeout=5, run_as_root=True):
 		""" (static method) Launch a BLE scan """
 		if backend == "bled112":
 			adapter = pygatt.backends.BGAPIBackend()
 		elif backend == "linux":
-			adapter = pygatt.backends.GATTToolBackend(hci_device=hci_device)
+			adapter = pygatt.backends.GATTToolBackend()
 		else:
 			print "Unkown backend (valid values are bled112 and linux)"
 			return {0}
@@ -78,16 +76,14 @@ class APIdou():
 		""" Connect to APIdou with the correct backend """
 		if self.backend == "bled112":
 			self.adapter = pygatt.backends.BGAPIBackend()
-			self.adapter.start()
-			self.device = self.adapter.connect(self.address, addr_type=1)
-			self.getHandles()
 		elif self.backend == "linux":
 			self.adapter = pygatt.backends.GATTToolBackend(hci_device=self.hci)
-			self.adapter.start()
-			self.device = self.adapter.connect(self.address, address_type='random')
-			self.getHandles()
 		else:
 			print "Unkown backend (valid values are bled112 and linux)"
+			return
+		self.adapter.start()
+		self.device = self.adapter.connect(self.address, address_type=pygatt.backends.BLEAddressType.random)
+		self.getHandles()
 
 	def getHandles(self):
 		"""	Retrieves and stores the handles for each characteristic.
@@ -230,24 +226,24 @@ class APIdou():
 			The accelerometer needs to be on with the default callback
 		"""
 		if self.mag > 22000:
-			return APIdou.APIdouPositions.MOVING
+			return APIdou.MOVING
 		elif self.mag < 5000:
-			return APIdou.APIdouPositions.FALLING
+			return APIdou.FALLING
 
 		pitch = (math.atan2(self.accel[1], self.accel[2]) * (180 / math.pi)) % 360 
 		roll = (math.atan2(self.accel[0], self.accel[2]) * (180 / math.pi)) % 360
 
 		if (pitch < 20 or pitch > 340) and (roll < 20 or roll > 340):
-			return APIdou.APIdouPositions.ON_THE_BACK
+			return APIdou.ON_THE_BACK
 		elif 150 < pitch < 210 and 150 < roll < 210:
-			return APIdou.APIdouPositions.FACING_DOWN
+			return APIdou.FACING_DOWN
 		elif 45 < pitch < 135:
-			return APIdou.APIdouPositions.STANDING
+			return APIdou.STANDING
 		elif 225 < pitch < 315:
-			return APIdou.APIdouPositions.UPSIDE_DOWN
+			return APIdou.UPSIDE_DOWN
 		elif 45 < roll < 135:
-			return APIdou.APIdouPositions.ON_THE_LEFT
+			return APIdou.ON_THE_LEFT
 		elif 225 < roll < 315:
-			return APIdou.APIdouPositions.ON_THE_RIGHT
+			return APIdou.ON_THE_RIGHT
 		else:
-			return APIdou.APIdouPositions.UNKNOW
+			return APIdou.UNKNOW
