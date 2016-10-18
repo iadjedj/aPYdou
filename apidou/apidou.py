@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
-import pygatt.backends
+import pygatt
 import struct
 import math
 
@@ -58,7 +57,7 @@ class APIdou():
 		self.hci = hci_device
 
 	@staticmethod
-	def scan(backend, timeout=5, run_as_root=True):
+	def scan(backend, timeout=5):
 		""" (static method) Launch a BLE scan """
 		if backend == "bled112":
 			adapter = pygatt.backends.BGAPIBackend()
@@ -68,7 +67,10 @@ class APIdou():
 			print "Unkown backend (valid values are bled112 and linux)"
 			return {0}
 		adapter.start()
-		scan_result = adapter.scan(timeout=timeout)
+		if backend == "linux":
+			scan_result = adapter.scan(timeout=timeout,run_as_root=True)
+		else:
+			scan_result = adapter.scan(timeout=timeout)
 		adapter.stop()
 		return scan_result
 
@@ -105,7 +107,8 @@ class APIdou():
 		if hasattr(self, 'device'):
 			self.setVibration(False)
 			self.device.disconnect()
-		self.adapter.stop()
+		if hasattr(self, 'adapter'):
+			self.adapter.stop()
 
 	def accelNotificationCallback(self, handle, value):
 		""" Default callback for the accelerometer
