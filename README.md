@@ -17,4 +17,4 @@ device.setVibration(False)
 device.disconnect()
 ```
 
-More examples on https://github.com/iadjedj/APIdouExamples/python
+More examples on the [other repository](https://github.com/iadjedj/APIdouExamples/tree/master/python)
