@@ -11,7 +11,7 @@ setup(
     author_email="ilann@apidou.fr",
     description="Module to communicate with APIdou, the connected plush",
     long_description=open('README.md').read(),
-    install_requires=["pygatt==2.1.0", "pexpect"],
+    install_requires=["pygatt", "pexpect"],
     include_package_data=True,
     url='http://github.com/iadjedj/apidou',
     classifiers=[
